@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelos del proyecto
+
+model comunidad {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(60)
+  cars Car[]
+
+}
+
+model Car {
+  id Int @id @default(autoincrement())  
+  plate String @db.VarChar(6)
+  release_date DateTime @db.Date
+  is_available Boolean @default(true)
+  price Decimal @db.Decimal(10,2)
+  //campo de la clave foranea
+  comunidad_id Int
+  //relacion con la tabla comunidad
+  comunidad comunidad @relation(fields: [comunidad_id],references: [id])
+
+}
+
+model Notificaciones {
+  id           Int      @id @default(autoincrement())  
+  id_usuario   String   @db.VarChar(33)               
+  tipo         String   @db.VarChar(20)               
+  mensaje      String   @db.VarChar(255)              
+  fecha_envio  DateTime @db.Date                     
+  categoria    String   @db.VarChar(30)               
+}
+
+model Reporte {
+  id                Int      @id @default(autoincrement())
+  id_usuario        String   @db.VarChar(32)           
+  tipo              String   @db.VarChar(20)            
+  contenido         String   @db.Text                   
+  fecha_generacion  DateTime @db.Date                   
+  recomendaciones   String   @db.VarChar(255)           
+}
+
+model Recordatorio {
+  id         Int      @id @default(autoincrement())
+  id_usuario String   @db.VarChar(36)
+  tipo       String   @db.VarChar(20)
+  mensaje    String   @db.VarChar(255)
+  fecha      DateTime @db.Date
+  activo     Boolean  @default(true)
+}
+
+model Usuario {
+  id                Int       @id @default(autoincrement())
+  nombre            String    @db.VarChar(50)
+  apellido          String    @db.VarChar(50)
+  email             String    @db.VarChar(100) @unique
+  clave             String    @db.VarChar(255)
+  fecha_registro    DateTime  @db.Date
+  nivel_experiencia String    @db.VarChar(30)
+  perfil_cognitivo  String    @db.VarChar(50)
+  activo            Boolean   @default(true)
+}
