@@ -1,36 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { CreateComunidadDto } from './dto/create-comunidad.dto';
-import { UpdateComunidadDto } from './dto/update-comunidad.dto';
-import { Comunidad } from './entities/comunidad.entity'; 
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { comunidad } from '@prisma/client'; // 👈 Tipo generado automáticamente por Prisma
 
 @Injectable()
 export class ComunidadService {
-  constructor(
-   private prisma: PrismaService
+  constructor(private readonly prisma: PrismaService) {}
 
-
-  ) {}
-
-  // Método que retorna todo el array
-  findAll() {
+  // Obtener todas las comunidades
+  async findAll(): Promise<comunidad[]> {
     return this.prisma.comunidad.findMany();
   }
 
-  // Método para buscar la comunidad por id
-  findOne(id: number){
-  
-}
+  // Buscar comunidad por id
+  async findOne(id: number): Promise<comunidad | null> {
+    return this.prisma.comunidad.findUnique({
+      where: { id },
+    });
+  }
 
-//Añadir al arreglo de comunidad
-// la comunidad que esta llegando por el body 
+  // Crear una nueva comunidad
+  async create(data: Omit<comunidad, 'id'>): Promise<comunidad> {
+    return this.prisma.comunidad.create({
+      data,
+    });
+  }
 
- create(body){
-}
-//eliminar un elemento del arreglo
-//  de comunidad por id
-
- remove(id:number){
-
-}
+  // Eliminar comunidad por id
+  async remove(id: number): Promise<comunidad> {
+    return this.prisma.comunidad.delete({
+      where: { id },
+    });
+  }
 }

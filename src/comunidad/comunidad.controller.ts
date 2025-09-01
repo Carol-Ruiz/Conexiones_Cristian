@@ -5,11 +5,11 @@ import { UpdateComunidadDto } from './dto/update-comunidad.dto';
 
 @Controller('comunidad')
 export class ComunidadController {
+  constructor(private readonly comunidadService: ComunidadService){}
 
   //inyeccion de dependencias:
   // inyectar un componente para uso en otro
   // sin tener que instanciarlo
-  constructor(private readonly comunidadService: ComunidadService){}
   @Post()
   create(@Body()body ) {
     return this.comunidadService.create(body)
