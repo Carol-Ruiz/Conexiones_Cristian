@@ -20,15 +20,7 @@ export class CreateUsuarioDto {
 //          llegue el nombre de la categoria 
 //          unicamente 
 
-
-  nombre: string;
-  apellido: string;
-  email: string;
-  clave: string;
-  fecha_registro: Date;
-  nivel_experiencia: string;
-  perfil_cognitivo: string;
-  activo?: boolean; // opcional, Prisma lo pone por defecto si no se pasa
+  username: string;
+  password: string;
 }
-
 

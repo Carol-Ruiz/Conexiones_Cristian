@@ -10,67 +10,69 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // Modelos del proyecto
 
-model comunidad {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(60)
+model Comunidad {
+  id   Int    @id @default(autoincrement())
+  name String @unique
   cars Car[]
-
 }
 
 model Car {
-  id Int @id @default(autoincrement())  
-  plate String @db.VarChar(6)
-  release_date DateTime @db.Date
-  is_available Boolean @default(true)
-  price Decimal @db.Decimal(10,2)
-  //campo de la clave foranea
-  comunidad_id Int
-  //relacion con la tabla comunidad
-  comunidad comunidad @relation(fields: [comunidad_id],references: [id])
+  id            Int      @id @default(autoincrement())  
+  plate         String   
+  release_date  DateTime
+  is_available  Boolean  @default(true)
+  price         Decimal  @default(0.00)
 
+  // Clave foránea
+  comunidad_id Int
+  comunidad    Comunidad @relation(fields: [comunidad_id], references: [id])
 }
 
 model Notificaciones {
   id           Int      @id @default(autoincrement())  
-  id_usuario   String   @db.VarChar(33)               
-  tipo         String   @db.VarChar(20)               
-  mensaje      String   @db.VarChar(255)              
-  fecha_envio  DateTime @db.Date                     
-  categoria    String   @db.VarChar(30)               
+  id_usuario   String             
+  tipo         String               
+  mensaje      String              
+  fecha_envio  DateTime                     
+  categoria    String                  
 }
 
 model Reporte {
   id                Int      @id @default(autoincrement())
-  id_usuario        String   @db.VarChar(32)           
-  tipo              String   @db.VarChar(20)            
-  contenido         String   @db.Text                   
-  fecha_generacion  DateTime @db.Date                   
-  recomendaciones   String   @db.VarChar(255)           
+  id_usuario        String           
+  tipo              String            
+  contenido         String           
+  fecha_generacion  DateTime           
+  recomendaciones   String           
 }
 
 model Recordatorio {
   id         Int      @id @default(autoincrement())
-  id_usuario String   @db.VarChar(36)
-  tipo       String   @db.VarChar(20)
-  mensaje    String   @db.VarChar(255)
-  fecha      DateTime @db.Date
+  id_usuario String
+  tipo       String
+  mensaje    String
+  fecha      DateTime
   activo     Boolean  @default(true)
 }
 
+model Estado {
+  id      Int      @id @default(autoincrement())
+  estado  String
+
+  usuarios Usuario[]
+}
+
 model Usuario {
-  id                Int       @id @default(autoincrement())
-  nombre            String    @db.VarChar(50)
-  apellido          String    @db.VarChar(50)
-  email             String    @db.VarChar(100) @unique
-  clave             String    @db.VarChar(255)
-  fecha_registro    DateTime  @db.Date
-  nivel_experiencia String    @db.VarChar(30)
-  perfil_cognitivo  String    @db.VarChar(50)
-  activo            Boolean   @default(true)
+  id         Int     @id @default(autoincrement())
+  username   String  @unique
+  password   String
+  estado_id  Int     @default(1)
+
+  estado     Estado  @relation(fields: [estado_id], references: [id])
 }
