@@ -19,6 +19,7 @@ datasource db {
 model Comunidad {
   id   Int    @id @default(autoincrement())
   name String @unique
+  createAt    DateTime @default(now())
   cars Car[]
 }
 

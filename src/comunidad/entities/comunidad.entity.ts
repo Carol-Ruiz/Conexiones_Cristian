@@ -1,7 +1,5 @@
 export class Comunidad {
-id: number;
-name: string;
-descripcion:  string;
-createAt: Date;
-
+  id: number;
+  name: string;
+  createAt: Date;
 }

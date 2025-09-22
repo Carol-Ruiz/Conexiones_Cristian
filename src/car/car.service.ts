@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import e from 'express';
 
 @Injectable()
 export class CarService {
@@ -9,6 +10,30 @@ export class CarService {
   constructor(private prisma:PrismaService) {}
 
   async create(newCar: CreateCarDto) {
+    let comunidad =  await this.prisma.comunidad.findFirst({
+      where: {
+          id:newCar.comunidad_id
+          } 
+    })     
+ 
+  if (!comunidad) {
+  throw new HttpException('La comunidad no existe', 400);
+}
+
+
+
+
+
+
+     //Validacion logica de negocio 
+     // la placa no puede estar repetida
+     let existe = await this.prisma.car.findFirst({
+      where: {plate: newCar.plate}
+     })
+
+    if (existe) {
+      throw new HttpException('La placa ya existe', 400);
+    }else{
     return await this.prisma.car.create({
       data: {
       plate: newCar.plate,
@@ -17,5 +42,67 @@ export class CarService {
       price: newCar.price,
       comunidad: {connect: {id: newCar.comunidad_id} }
     }
+  })}
+
+
+}
+
+async findById(id:number){
+  //1. Buscar el carro por id 
+  let existe = await this.prisma.car.findFirst({
+    where: {id: id}
   })
-}}
+  //2. Si no existe, lanzar 
+  // una HTTPexcepcion 
+   if(!existe){
+    throw new HttpException('El carro no existe', 404);
+
+  }
+  //3.Si existe devolver el carro
+else{
+     
+  return {
+     "success": true,
+      "data": existe
+  }
+}
+
+
+}
+
+
+async findAll() {
+  let carros = await this.prisma.car.findMany({
+    orderBy:{ plate: 'asc'}
+  })
+
+if (carros.length ===0) {
+  throw new HttpException('No hay carros', 404)}
+
+else{
+  return carros
+}
+
+}
+
+
+async delete(id: number) {
+  let existe = await this.prisma.car.findFirst({
+    where: { id: id }
+  });
+
+  if (!existe) {
+    throw new HttpException('El carro no existe', 404);
+  } else {
+    await this.prisma.car.delete({
+      where: { id: id }
+    });
+    return {
+      success: true,
+      message: 'El carro ha sido eliminado'
+    };
+  }
+}
+
+
+}
